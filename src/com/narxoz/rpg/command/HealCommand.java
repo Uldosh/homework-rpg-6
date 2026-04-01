@@ -3,33 +3,34 @@ package com.narxoz.rpg.command;
 import com.narxoz.rpg.arena.ArenaFighter;
 
 public class HealCommand implements ActionCommand {
-    private final ArenaFighter target;
+    private final ArenaFighter fighter;
     private final int healAmount;
     private int actualHealApplied;
 
-    public HealCommand(ArenaFighter target, int healAmount) {
-        this.target = target;
+    public HealCommand(ArenaFighter fighter, int healAmount) {
+        this.fighter= fighter;
         this.healAmount = healAmount;
     }
 
     @Override
     public void execute() {
-        // TODO: Check whether the target has heal potions remaining before healing.
-        // TODO: Heal the target by healAmount using target.heal(int).
-        // TODO: Store how much was actually applied in actualHealApplied (for undo).
-        // Hint: actual heal may be less than healAmount if target is near max health.
+        int hpBefore = fighter.getCurrentHp();
+        actualHealApplied = fighter.heal(healAmount);
+        if (actualHealApplied > 0) {
+            System.out.printf("  [HEAL] %s healed %d HP (HP: %d → %d)%n", fighter.getName(), actualHealApplied, hpBefore, fighter.getCurrentHp());
+        } else {
+            System.out.printf("  [HEAL] %s has no potions remaining — heal skipped%n", fighter.getName());
+        }
     }
 
     @Override
     public void undo() {
-        // TODO: Remove the heal that was applied.
-        // Note: Use actualHealApplied (what was actually gained), not healAmount.
-        // Hint: call target.takeDamage(actualHealApplied) to reverse the heal.
+        fighter.takeDamage(actualHealApplied);
+        System.out.printf("  [UNDO HEAL] removed %d HP from %s%n", actualHealApplied, fighter.getName());
     }
 
     @Override
     public String getDescription() {
-        // TODO: Return a readable summary, e.g. "Heal for 20 HP".
-        return "TODO";
+        return String.format("HealCommand(target=%s, amount=%d)", fighter.getName(), healAmount);
     }
 }

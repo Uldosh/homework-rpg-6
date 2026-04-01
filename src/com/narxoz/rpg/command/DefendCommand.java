@@ -3,30 +3,30 @@ package com.narxoz.rpg.command;
 import com.narxoz.rpg.arena.ArenaFighter;
 
 public class DefendCommand implements ActionCommand {
-    private final ArenaFighter target;
+    private final ArenaFighter fighter;
     private final double dodgeBoost;
 
-    public DefendCommand(ArenaFighter target, double dodgeBoost) {
-        this.target = target;
+    public DefendCommand(ArenaFighter fighter, double dodgeBoost) {
+        this.fighter= fighter;
         this.dodgeBoost = dodgeBoost;
     }
 
     @Override
     public void execute() {
-        // TODO: Apply the dodge boost using target.modifyDodgeChance(dodgeBoost).
-        // TODO: This boost is temporary — it applies until the next incoming attack.
-        //       For this assignment, the boost persists until undo() is called.
+        double before = fighter.getDodgeChance();
+        fighter.boostDodge(dodgeBoost);
+
+        System.out.printf("  [DEFEND] %s dodge chance boosted: %.0f%% → %.0f%%  (+%.0f%%)%n", fighter.getName(), before * 100, fighter.getDodgeChance() * 100, dodgeBoost * 100);
     }
 
     @Override
     public void undo() {
-        // TODO: Remove the dodge boost by calling target.modifyDodgeChance(-dodgeBoost).
-        // Note: This is most meaningful when the command is still queued and not yet executed.
+        fighter.removeDodgeBoost(dodgeBoost);
+        System.out.printf("  [UNDO DEFEND] dodge boost of %.0f%% removed from %s (now %.0f%%)%n", dodgeBoost * 100, fighter.getName(), fighter.getDodgeChance() * 100);
     }
 
     @Override
     public String getDescription() {
-        // TODO: Return a readable summary, e.g. "Defend (dodge boost: +0.15)".
-        return "TODO";
+        return String.format("DefendCommand(target=%s, boost=+%.0f%%)", fighter.getName(), dodgeBoost * 100);
     }
 }

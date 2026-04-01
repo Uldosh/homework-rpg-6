@@ -2,31 +2,46 @@ package com.narxoz.rpg.command;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.*;
 
 public class ActionQueue {
-    private final List<ActionCommand> queue = new ArrayList<>();
+    private final Deque<ActionCommand> queue = new ArrayDeque<>();
 
-    public void enqueue(ActionCommand cmd) {
-        // TODO: Add the command to the end of the queue.
+    public void enqueue(ActionCommand command) {
+        if (command == null) throw new IllegalArgumentException("command must not be null");
+        queue.addLast(command);
     }
 
     public void undoLast() {
-        // TODO: Remove the last queued command without executing it.
-        // Design question: should cmd.undo() be called, or is it simply removed?
-        // For this assignment: just remove the last entry from the queue.
-        // Hint: List has a remove(int index) method — think about which index is "last".
+        if (queue.isEmpty()) {
+            System.out.println("  [QUEUE] Nothing to undo — queue is empty.");
+            return;
+        }
+        ActionCommand last = queue.removeLast();
+        System.out.printf("  [QUEUE] Undoing: %s%n", last.getDescription());
+        last.undo();
     }
 
     public void executeAll() {
-        // TODO: Call execute() on every command in the queue, in order.
-        // TODO: Clear the queue after all commands have run.
-        // TODO: What should happen if the queue is empty?
+        if (queue.isEmpty()) {
+            System.out.println("  [QUEUE] Queue is empty — nothing to execute.");
+            return;
+        }
+        while (!queue.isEmpty()) {
+            ActionCommand cmd = queue.pollFirst();
+            cmd.execute();
+        }
     }
 
     public List<String> getCommandDescriptions() {
-        // TODO: Return a snapshot list of descriptions for all queued commands.
-        // TODO: Use cmd.getDescription() for each command.
-        // Note: the returned list must be independent — modifying it must not affect the queue.
-        return new ArrayList<>();
+        List<String> descriptions = new ArrayList<>();
+        for (ActionCommand cmd : queue) {          // Deque iteration is front-to-back
+            descriptions.add(cmd.getDescription());
+        }
+        return List.copyOf(descriptions);
     }
+
+    public boolean isEmpty() { return queue.isEmpty(); }
+
+    public int size() { return queue.size(); }
 }
