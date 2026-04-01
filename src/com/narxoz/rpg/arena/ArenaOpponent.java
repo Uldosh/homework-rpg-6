@@ -2,30 +2,34 @@ package com.narxoz.rpg.arena;
 
 public class ArenaOpponent {
     private final String name;
-    private int health;
-    private final int maxHealth;
+    private int currentHp;
+    private final int maxHp;
     private final int attackPower;
 
-    public ArenaOpponent(String name, int health, int attackPower) {
+    public ArenaOpponent(String name, int maxHp, int attackPower) {
         this.name = name;
-        this.health = health;
-        this.maxHealth = health;
+        this.currentHp = maxHp;
+        this.maxHp = maxHp;
         this.attackPower = attackPower;
     }
 
-    public String getName() { return name; }
-    public int getHealth() { return health; }
-    public int getAttackPower() { return attackPower; }
+    public void takeDamage(int amount) { currentHp = Math.max(0, currentHp - damage); }
 
-    public void takeDamage(int amount) {
-        health = Math.max(0, health - amount);
-    }
-
-    public void restoreHealth(int amount) {
-        health = Math.min(maxHealth, health + amount);
+    public void restoreHp(int amount) {
+        currentHp = Math.min(maxHp, currentHp + amount);
     }
 
     public boolean isAlive() {
-        return health > 0;
+        return currentHp > 0;
+    }
+    public String getName()       { return name; }
+    public int    getCurrentHp()  { return currentHp; }
+    public int    getMaxHp()      { return maxHp; }
+    public int    getAttackPower(){ return attackPower; }
+
+    @Override
+    public String toString() {
+        return String.format("%s [HP %d/%d | ATK %d]",
+                name, currentHp, maxHp, attackPower);
     }
 }

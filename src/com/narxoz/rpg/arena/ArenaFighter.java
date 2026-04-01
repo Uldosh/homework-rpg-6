@@ -2,55 +2,54 @@ package com.narxoz.rpg.arena;
 
 public class ArenaFighter {
     private final String name;
-    private int health;
-    private final int maxHealth;
+    private int maxHp;
+    private int currentHp;
+    private int attackPower;
+    private int armorValue;
+    private int blockRating;
     private double dodgeChance;
-    private final int blockRating;
-    private final int armorValue;
-    private final int attackPower;
-    private int healPotions;
+    private int potions;
 
-    public ArenaFighter(String name, int health, double dodgeChance,
-                        int blockRating, int armorValue, int attackPower, int healPotions) {
-        this.name = name;
-        this.health = health;
-        this.maxHealth = health;
-        this.dodgeChance = dodgeChance;
-        this.blockRating = blockRating;
-        this.armorValue = armorValue;
+    public ArenaFighter(String name, int maxHp, int attackPower,
+                        int armorValue, int blockRating,
+                        double dodgeChance, int potions) {
+        this.name        = name;
+        this.maxHp       = maxHp;
+        this.currentHp   = maxHp;
         this.attackPower = attackPower;
-        this.healPotions = healPotions;
+        this.armorValue  = armorValue;
+        this.blockRating = blockRating;
+        this.dodgeChance = dodgeChance;
+        this.potions     = potions;
     }
+    public void takeDamage(int damage) {
+        currentHp = Math.max(0, currentHp - damage);
+    }
+    public int heal(int amount) {
+        if (potions <= 0) return 0;
+        int before = currentHp;
+        currentHp = Math.min(maxHp, currentHp + amount);
+        potions--;
+        return currentHp - before;
+    }
+    public void boostDodge(double boost) {
+        dodgeChance = Math.min(1.0, dodgeChance + boost);
+    }
+    public boolean isAlive() { return currentHp > 0; }
 
     public String getName() { return name; }
-    public int getHealth() { return health; }
-    public int getMaxHealth() { return maxHealth; }
+    public int    getCurrentHp()  { return currentHp; }
+    public int    getMaxHp()      { return maxHp; }
     public double getDodgeChance() { return dodgeChance; }
     public int getBlockRating() { return blockRating; }
     public int getArmorValue() { return armorValue; }
     public int getAttackPower() { return attackPower; }
-    public int getHealPotions() { return healPotions; }
+    public int getPotions() { return potions; }
 
-    public void takeDamage(int amount) {
-        // TODO: Reduce health by amount; clamp health to a minimum of 0.
-        health -= amount;
-    }
-
-    public void heal(int amount) {
-        // TODO: Increase health by amount; do not exceed maxHealth.
-        // TODO: Decide what happens when healPotions runs out — should healing be blocked?
-        health += amount;
-        healPotions--;
-    }
-
-    public void modifyDodgeChance(double delta) {
-        // TODO: Add delta to dodgeChance.
-        // TODO: Decide whether to clamp dodgeChance between 0.0 and 1.0.
-        dodgeChance += delta;
-    }
-
-    public boolean isAlive() {
-        // TODO: Return whether the fighter still has health remaining.
-        return health > 0;
+    @Override
+    public String toString() {
+        return String.format("%s [HP %d/%d | ATK %d | ARM %d | BLK %d%% | DODGE %.0f%% | Potions %d]",
+                name, currentHp, maxHp, attackPower,
+                armorValue, blockRating, dodgeChance * 100, potions);
     }
 }

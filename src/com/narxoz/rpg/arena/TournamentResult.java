@@ -7,14 +7,26 @@ import java.util.List;
 public class TournamentResult {
     private String winner;
     private int rounds;
-    private final List<String> log = new ArrayList<>();
+    private final List<String> log;
+
+    public TournamentResult(String winner, int rounds, List<String> log) {
+        this.winner = winner;
+        this.rounds = rounds;
+        this.log = Collections.unmodifiableList(log);
+    }
 
     public String getWinner() { return winner; }
-    public void setWinner(String winner) { this.winner = winner; }
-
     public int getRounds() { return rounds; }
-    public void setRounds(int rounds) { this.rounds = rounds; }
+    public List<String> getLog() { return log; }
 
-    public void addLine(String line) { log.add(line); }
-    public List<String> getLog() { return Collections.unmodifiableList(log); }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Tournament Result ===\n");
+        sb.append("Winner : ").append(winner).append("\n");
+        sb.append("Rounds : ").append(rounds).append("\n");
+        sb.append("--- Event Log ---\n");
+        log.forEach(entry -> sb.append("  ").append(entry).append("\n"));
+        return sb.toString();
+    }
 }
